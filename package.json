@@ -142,7 +142,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/semantic-release/semantic-release.git"
+    "url": "git+https://github.com/tech-meppem/semantic-release-filepaths.git"
   },
   "config": {
     "commitizen": {

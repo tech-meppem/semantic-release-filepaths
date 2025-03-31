@@ -96,6 +96,7 @@ test.serial("Plugins are called with expected values", async (t) => {
     originalRepositoryURL: repositoryUrl,
     globalOpt: "global",
     tagFormat: `v\${version}`,
+    pathFilter: null,
   };
   const branches = [
     {
@@ -908,6 +909,7 @@ test.serial('Call all "success" plugins even if one errors out', async (t) => {
     repositoryUrl,
     globalOpt: "global",
     tagFormat: `v\${version}`,
+    pathFilter: null,
   };
   const options = {
     ...config,
@@ -958,6 +960,7 @@ test.serial('Log all "verifyConditions" errors', async (t) => {
     repositoryUrl,
     originalRepositoryURL: repositoryUrl,
     tagFormat: `v\${version}`,
+    pathFilter: null,
   };
   const options = {
     ...config,
@@ -1008,7 +1011,7 @@ test.serial('Log all "verifyRelease" errors', async (t) => {
   const error1 = new SemanticReleaseError("error 1", "ERR1");
   const error2 = new SemanticReleaseError("error 2", "ERR2");
   const fail = stub().resolves();
-  const config = { branches: [{ name: "master" }], repositoryUrl, tagFormat: `v\${version}` };
+  const config = { branches: [{ name: "master" }], repositoryUrl, tagFormat: `v\${version}`, pathFilter: null };
   const options = {
     ...config,
     verifyConditions: stub().resolves(),
@@ -2031,10 +2034,10 @@ test('Get all commits in module1 ', async (t) => {
     fail: stub().resolves(),
   };
 
-  const semanticRelease = requireNoCache('..', {
-    './lib/get-logger': () => t.context.logger,
-    'env-ci': () => ({isCi: true, branch: 'master', isPr: false}),
-  });
+  await td.replaceEsm("../lib/get-logger.js", null, () => t.context.logger);
+  await td.replaceEsm("env-ci", null, () => ({ isCi: true, branch: 'master', isPr: false }));
+  const semanticRelease = (await import("../index.js")).default;
+
   t.truthy(
       await semanticRelease(options, {
         cwd,

@@ -5,6 +5,8 @@ import pEachSeries from "p-each-series";
 import gitLogParser from "git-log-parser";
 import getStream from "get-stream";
 import { GIT_NOTE_REF } from "../../lib/definitions/constants.js";
+import fse from 'fs-extra';
+import path from "path";
 
 /**
  * Commit message information.
@@ -326,4 +328,25 @@ export async function gitAddNote(note, ref, execaOptions) {
  */
 export async function gitGetNote(ref, execaOptions) {
   return (await execa("git", ["notes", "--ref", `${GIT_NOTE_REF}-${ref}`, "show", ref], execaOptions)).stdout;
+}
+
+/**
+ * Create commits on the current git repository.
+ *
+ * @param {Array<string>} messages Commit messages.
+ * @param {Object} [execaOpts] Options to pass to `execa`.
+ *
+ * @returns {Array<Commit>} The created commits, in reverse order (to match `git log` order).
+ */
+export async function gitCommitsWithFiles(commits, repo, execaOptions) {
+
+  for (const commit of commits) {
+    for (const file of commit.files) {
+      let filePath = path.join(repo.cwd, file)
+      await fse.outputFile(filePath, commit.message)
+      await execa('git', ['add', filePath], execaOptions)
+    }
+    await execa('git', ['commit', '-m', commit.message, '--allow-empty', '--no-gpg-sign'], execaOptions)
+  }
+  return (await gitGetCommits(undefined, execaOptions)).slice(0, commits.length);
 }

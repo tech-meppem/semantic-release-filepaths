@@ -1,3 +1,12 @@
+<p>
+Fork info:
+
+Almost all of code changes for this fork can be found from this PR by @bogaertg:
+https://github.com/semantic-release/semantic-release/pull/2315
+
+I'm just updating & making it into a package.
+</p>
+<hr/>
 <h1 align="center" style="border-bottom: none;">📦🚀 semantic-release</h1>
 <h3 align="center">Fully automated version management and package publishing</h3>
 <p align="center">

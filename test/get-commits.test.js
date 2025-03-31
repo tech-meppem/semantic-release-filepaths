@@ -1,7 +1,7 @@
 import test from "ava";
 import { stub } from "sinon";
 import getCommits from "../lib/get-commits.js";
-import { gitCommits, gitDetachedHead, gitRepo } from "./helpers/git-utils.js";
+import { gitCommits, gitCommitsWithFiles, gitDetachedHead, gitRepo } from "./helpers/git-utils.js";
 
 test.beforeEach((t) => {
   // Stub the logger functions
@@ -111,4 +111,32 @@ test("Return empty array if there is no commits", async (t) => {
 
   // Verify no commit is retrieved
   t.deepEqual(result, []);
+});
+
+test('Return only commit for module1 path', async (t) => {
+  // Create a git repository, set the current working directory at the root of the repo
+  const {cwd} = await gitRepo();
+  let commitsToCreate = [{message: "message1",files: ["readme.md"]},{message: "message2",files: ["module1/readme.md"]},{message: "message3",files: ["readme1.md","module1/readme2.md"]}]
+  let pathFilter = "module1/*"
+  let commits = await gitCommitsWithFiles(commitsToCreate,{cwd},{cwd})
+
+  // Retrieve the commits with the commits module
+  const result = await getCommits({cwd, lastRelease: {}, logger: t.context.logger, options: { pathFilter }});
+
+  // Verify only commit is retrieved
+  t.deepEqual(result, commits.slice(0,2));
+});
+
+test('Return only commit for root path excluding module1 path', async (t) => {
+  // Create a git repository, set the current working directory at the root of the repo
+  const {cwd} = await gitRepo();
+  let commitsToCreate = [{message: "message1",files: ["readme.md"]},{message: "message2",files: ["module1/readme.md"]},{message: "message3",files: ["readme1.md","module1/readme2.md"]},{message: "message4",files: ["readme4.md"]}]
+  let pathFilter = "^((?!module1).)*$"
+  let commits = await gitCommitsWithFiles(commitsToCreate, {cwd}, {cwd})
+
+  // Retrieve the commits with the commits module
+  const result = await getCommits({cwd, lastRelease: {}, logger: t.context.logger, options: { pathFilter }});
+
+  // Verify only commit is retrieved
+  t.deepEqual(result, Array.of().concat(commits.slice(0,2),commits[3]));
 });

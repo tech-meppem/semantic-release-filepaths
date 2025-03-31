@@ -122,6 +122,7 @@ test.serial("Read options from package.json", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Verify the plugins module is called with the plugin options from package.json
   td.when(plugins({ cwd, options }, {})).thenResolve(pluginsConfig);
@@ -143,6 +144,7 @@ test.serial("Read options from .releaserc.yml", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json in repository root
   await writeFile(path.resolve(cwd, ".releaserc.yml"), yaml.dump(options));
@@ -164,6 +166,7 @@ test.serial("Read options from .releaserc.json", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json in repository root
   await outputJson(path.resolve(cwd, ".releaserc.json"), options);
@@ -185,6 +188,7 @@ test.serial("Read options from .releaserc.js", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json in repository root
   await writeFile(path.resolve(cwd, ".releaserc.js"), `module.exports = ${JSON.stringify(options)}`);
@@ -206,6 +210,7 @@ test.serial("Read options from .releaserc.cjs", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create .releaserc.cjs in repository root
   await writeFile(path.resolve(cwd, ".releaserc.cjs"), `module.exports = ${JSON.stringify(options)}`);
@@ -227,6 +232,7 @@ test.serial("Read options from .releaserc.mjs", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create .releaserc.mjs in repository root
   await writeFile(path.resolve(cwd, ".releaserc.mjs"), `export default ${JSON.stringify(options)}`);
@@ -248,6 +254,7 @@ test.serial("Read options from release.config.js", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json in repository root
   await writeFile(path.resolve(cwd, "release.config.js"), `module.exports = ${JSON.stringify(options)}`);
@@ -269,6 +276,7 @@ test.serial("Read options from release.config.cjs", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Verify the plugins module is called with the plugin options from release.config.cjs
   td.when(plugins({ cwd, options }, {})).thenResolve(pluginsConfig);
@@ -290,6 +298,7 @@ test.serial("Read options from release.config.mjs", async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Verify the plugins module is called with the plugin options from release.config.mjs
   td.when(plugins({ cwd, options }, {})).thenResolve(pluginsConfig);
@@ -311,6 +320,7 @@ test.serial("Prioritise CLI/API parameters over file configuration and git repo"
   const pkgOptions = {
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_pkg" },
     branches: ["branch_pkg"],
+    pathFilter: null,
   };
   const options = {
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_cli" },
@@ -318,6 +328,7 @@ test.serial("Prioritise CLI/API parameters over file configuration and git repo"
     repositoryUrl: "http://cli-url.com/owner/package",
     tagFormat: `cli\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Verify the plugins module is called with the plugin options from CLI/API
   td.when(plugins({ cwd, options }, {})).thenResolve(pluginsConfig);
@@ -334,7 +345,7 @@ test.serial("Prioritise CLI/API parameters over file configuration and git repo"
 test.serial('Read configuration from file path in "extends"', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: "./shareable.json" };
+  const pkgOptions = { extends: "./shareable.json", pathFilter: null };
   const options = {
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_param" },
     generateNotes: "generateNotes",
@@ -342,6 +353,7 @@ test.serial('Read configuration from file path in "extends"', async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: ["plugin-1", ["plugin-2", { plugin2Opt: "value" }]],
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -368,7 +380,7 @@ test.serial('Read configuration from file path in "extends"', async (t) => {
 test.serial('Read configuration from module path in "extends"', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: "shareable" };
+  const pkgOptions = { extends: "shareable", pathFilter: null };
   const options = {
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_param" },
     generateNotes: "generateNotes",
@@ -376,6 +388,7 @@ test.serial('Read configuration from module path in "extends"', async (t) => {
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -394,12 +407,13 @@ test.serial('Read configuration from module path in "extends"', async (t) => {
 test.serial('Read configuration from an array of paths in "extends"', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: ["./shareable1.json", "./shareable2.json"] };
+  const pkgOptions = { extends: ["./shareable1.json", "./shareable2.json"], pathFilter: null };
   const options1 = {
     verifyRelease: "verifyRelease1",
     analyzeCommits: { path: "analyzeCommits1", param: "analyzeCommits_param1" },
     branches: ["test_branch"],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const options2 = {
     verifyRelease: "verifyRelease2",
@@ -408,6 +422,7 @@ test.serial('Read configuration from an array of paths in "extends"', async (t) 
     branches: ["test_branch"],
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -437,12 +452,13 @@ test.serial('Read configuration from an array of paths in "extends"', async (t) 
 test.serial('Read configuration from an array of CJS files in "extends"', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: ["./shareable1.cjs", "./shareable2.cjs"] };
+  const pkgOptions = { extends: ["./shareable1.cjs", "./shareable2.cjs"], pathFilter: null };
   const options1 = {
     verifyRelease: "verifyRelease1",
     analyzeCommits: { path: "analyzeCommits1", param: "analyzeCommits_param1" },
     branches: ["test_branch"],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const options2 = {
     verifyRelease: "verifyRelease2",
@@ -451,6 +467,7 @@ test.serial('Read configuration from an array of CJS files in "extends"', async 
     branches: ["test_branch"],
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -480,12 +497,13 @@ test.serial('Read configuration from an array of CJS files in "extends"', async 
 test.serial('Read configuration from an array of ESM files in "extends"', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: ["./shareable1.mjs", "./shareable2.mjs"] };
+  const pkgOptions = { extends: ["./shareable1.mjs", "./shareable2.mjs"], pathFilter: null };
   const options1 = {
     verifyRelease: "verifyRelease1",
     analyzeCommits: { path: "analyzeCommits1", param: "analyzeCommits_param1" },
     branches: ["test_branch"],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const options2 = {
     verifyRelease: "verifyRelease2",
@@ -494,6 +512,7 @@ test.serial('Read configuration from an array of ESM files in "extends"', async 
     branches: ["test_branch"],
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -528,6 +547,7 @@ test.serial('Prioritize configuration from config file over "extends"', async (t
     branches: ["test_pkg"],
     generateNotes: "generateNotes",
     publish: [{ path: "publishPkg", param: "publishPkg_param" }],
+    pathFilter: null,
   };
   const options1 = {
     analyzeCommits: "analyzeCommits",
@@ -537,6 +557,7 @@ test.serial('Prioritize configuration from config file over "extends"', async (t
     repositoryUrl: "https://host.null/owner/module.git",
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -568,12 +589,14 @@ test.serial('Prioritize configuration from cli/API options over "extends"', asyn
     branches: ["branch_opts"],
     publish: [{ path: "publishOpts", param: "publishOpts_param" }],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const pkgOptions = {
     extends: "./shareable1.json",
     branches: ["branch_pkg"],
     generateNotes: "generateNotes",
     publish: [{ path: "publishPkg", param: "publishPkg_param" }],
+    pathFilter: null,
   };
   const options1 = {
     analyzeCommits: "analyzeCommits1",
@@ -581,6 +604,7 @@ test.serial('Prioritize configuration from cli/API options over "extends"', asyn
     publish: [{ path: "publishShareable", param: "publishShareable_param1" }],
     branches: ["test_branch1"],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const options2 = {
     analyzeCommits: "analyzeCommits2",
@@ -588,6 +612,7 @@ test.serial('Prioritize configuration from cli/API options over "extends"', asyn
     branches: ["test_branch2"],
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create package.json, shareable1.json and shareable2.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -617,12 +642,14 @@ test.serial('Allow to unset properties defined in shareable config with "null"',
     branches: ["test_branch"],
     repositoryUrl: "https://host.null/owner/module.git",
     plugins: null,
+    pathFilter: null,
   };
   const options1 = {
     generateNotes: "generateNotes",
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_param" },
     tagFormat: `v\${version}`,
     plugins: ["test-plugin"],
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
@@ -667,12 +694,14 @@ test.serial('Allow to unset properties defined in shareable config with "undefin
     analyzeCommits: undefined,
     branches: ["test_branch"],
     repositoryUrl: "https://host.null/owner/module.git",
+    pathFilter: null,
   };
   const options1 = {
     generateNotes: "generateNotes",
     analyzeCommits: { path: "analyzeCommits", param: "analyzeCommits_param" },
     tagFormat: `v\${version}`,
     plugins: false,
+    pathFilter: null,
   };
   // Create release.config.js and shareable.json in repository root
   await writeFile(path.resolve(cwd, "release.config.js"), `module.exports = ${format(pkgOptions)}`);
@@ -699,8 +728,8 @@ test.serial('Allow to unset properties defined in shareable config with "undefin
 test("Throw an Error if one of the shareable config cannot be found", async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: ["./shareable1.json", "non-existing-path"] };
-  const options1 = { analyzeCommits: "analyzeCommits" };
+  const pkgOptions = { extends: ["./shareable1.json", "non-existing-path"], pathFilter: null };
+  const options1 = { analyzeCommits: "analyzeCommits", pathFilter: null };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });
   await outputJson(path.resolve(cwd, "shareable1.json"), options1);
@@ -714,9 +743,10 @@ test("Throw an Error if one of the shareable config cannot be found", async (t) 
 test('Convert "ci" option to "noCi" when set from extended config', async (t) => {
   // Create a git repository, set the current working directory at the root of the repo
   const { cwd } = await gitRepo();
-  const pkgOptions = { extends: "./no-ci.json" };
+  const pkgOptions = { extends: "./no-ci.json", pathFilter: null };
   const options = {
     ci: false,
+    pathFilter: null,
   };
   // Create package.json and shareable.json in repository root
   await outputJson(path.resolve(cwd, "package.json"), { release: pkgOptions });

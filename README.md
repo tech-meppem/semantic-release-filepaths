@@ -1,10 +1,13 @@
 <p>
 Fork info:
 
+Adds a cli option: `--path-filter` to filter commits by paths of files they've changed.
+This is useful when you have multiple packages in a monorepo and want to release only the packages that have been changed.
+
 Almost all of code changes for this fork can be found from this PR by @bogaertg:
 https://github.com/semantic-release/semantic-release/pull/2315
 
-I'm just updating & making it into a package.
+I'm just updating to ESM & making it into a package.
 </p>
 <hr/>
 <h1 align="center" style="border-bottom: none;">📦🚀 semantic-release</h1>
